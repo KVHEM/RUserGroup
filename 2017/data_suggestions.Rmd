@@ -58,3 +58,22 @@ This is the estimated pedologic-ecological unit well known as "BPEJ" for entire 
 [1h 1km rainfall for Czech Republic ](linkremoved)(for link see email)
 
 I could provide some rainfall raster data covering Czech Rep. with 1 km resolution and 1 h accumulations. The original data format is .nc , that could be sometimes tricky for manipulation in R. The link below also contains the same data in ASCII format. As an example I picked data from June 2013 (last extensive flooding).
+
+## Yannis
+
+[3h global precipitation 1979-2015](http://www.gloh2o.org/)
+
+
+http://www.hydrol-earth-syst-sci.net/21/589/2017/hess-21-589-2017.pdf
+
+In nctf file format at 700mb/month - which can also be easily transformed to animation with Panoply software, e.g.:
+
+## Eliška
+[EC&D](http://www.ecad.eu/dailydata/index.php)
+
+daily observations at meteorological stations throughout Europe and the Mediterranean (latest data on 31st January)
+
+[Copernicus land](http://land.copernicus.eu/pan-european/corine-land-cover/view)
+
+and something from Copernicus, as Yannis mentioned Sentinel. For exaple they have Corine land cover 2012 in raster or vector
+

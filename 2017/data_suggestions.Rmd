@@ -37,3 +37,12 @@ Dataset contains information on past floods in Europe since 1980, based on the r
 [To be updated]
 
 These are daily runoff data for EU catchments from 3 sources GRDC, EWA and CHMI, for GRDC and CHMI we have some basin spatial data as well (might be useful for the GIS-R part of our sessions)
+
+
+## Roman
+
+[CRU TS v. 3.24.01](https://crudata.uea.ac.uk/cru/data/hrg)
+
+A gridded time-series dataset (01/1901 - 12/2015) in monthly step. It covers all land areas (excluding Antarctica) at 0.5° resolution. It contains variables such as precipitation, temperature, potential evapotranspiration etc. 
+
+

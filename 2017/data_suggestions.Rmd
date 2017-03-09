@@ -66,7 +66,7 @@ I could provide some rainfall raster data covering Czech Rep. with 1 km resoluti
 
 http://www.hydrol-earth-syst-sci.net/21/589/2017/hess-21-589-2017.pdf
 
-In nctf file format at 700mb/month - which can also be easily transformed to animation with Panoply software, e.g.:
+In ncdf file format at 700mb/month - which can also be easily transformed to animation with Panoply software.
 
 ## Eliška
 [EC&D](http://www.ecad.eu/dailydata/index.php)
@@ -75,5 +75,5 @@ daily observations at meteorological stations throughout Europe and the Mediterr
 
 [Copernicus land](http://land.copernicus.eu/pan-european/corine-land-cover/view)
 
-and something from Copernicus, as Yannis mentioned Sentinel. For exaple they have Corine land cover 2012 in raster or vector
+and something from Copernicus, as Yannis mentioned Sentinel. For exaple they have Corine land cover 2012 in raster or vector.
 

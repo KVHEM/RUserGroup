@@ -1,0 +1,8 @@
+name: Publish Document
+title:
+account: rpubs
+server: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/265162/874df06f2db34f5db0692eee176dc274
+bundleId: https://api.rpubs.com/api/v1/document/265162/874df06f2db34f5db0692eee176dc274
+url: http://rpubs.com/farofylax/265162
+when: 1492084080.54247

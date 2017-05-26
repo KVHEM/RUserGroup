@@ -1,0 +1,17 @@
+---
+title: "faq"
+author: "YannisMarkonis"
+date: "May 26, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+```
+
+## Some common questions about github [and there answers]
+
+[1. How do I remove some files from the repo's history?](https://help.github.com/articles/removing-files-from-a-repository-s-history/)
+
+[2. How do I synchronize a fork with master](https://help.github.com/articles/syncing-a-fork/)
+

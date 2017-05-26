@@ -1,0 +1,81 @@
+---
+title: "Data suggestions"
+author: "R User Group"
+date: "6 March 2017"
+output: html_document
+---
+
+# Suggestions for open data to work with
+
+## Martin
+
+[Global Streamflow Characteristics Dataset](http://www.gloh2o.org/gscd/)
+
+The Global Streamflow Characteristics Dataset (GSCD) consists of global maps of 17 streamflow characteristics, such as baseflow index, runoff coefficient, and flow percentiles, providing information about runoff behavior for the entire land surface including ungauged regions. The maps are unique in that they were derived using a data-driven (top down) approach based on streamflow observations from thousands of catchments around the globe, rather than using a physically-based (bottom up) process model.
+
+
+[E-RUN version 1.1: Observational gridded runoff estimates for Europe](https://doi.pangaea.de/10.1594/PANGAEA.861371)
+
+Observed monthly runoff rates are first tested for homogeneity and then related to gridded atmospheric variables (E-OBS version 12) using machine learning. The resulting statistical model is then used to estimate monthly runoff rates (December 1950 - December 2015) on a 0.5° x 0.5° grid. 
+
+[E-OBS](http://www.ecad.eu/download/ensembles/ensembles.php)
+
+Gridded precipitation and temperature for Europe 1950-present, 0.5° x 0.5° grid
+
+JRC was removed
+
+[European past floods](http://www.eea.europa.eu/data-and-maps/data/european-past-floods)
+
+Dataset contains information on past floods in Europe since 1980, based on the reporting of EU Member States for the EU Floods Directive (2007/60/EC) and combined with information provided by relevant national authorities and global databases on natural hazards. Reported data have been assessed and processed by the ETC-ICM and the EEA.
+
+[Google Earth Engine](https://earthengine.google.com/)
+
+Satelite data - many layers. No layer for getting the data directly into R - it could be a challenge to create htmlwidget for this data similar to leaflet htmlwidget.
+
+## Strnda
+
+[Daily runoff for Europe ](removed)(for link see email)
+
+These are daily runoff data for EU catchments from 3 sources GRDC, EWA and CHMI, for GRDC and CHMI we have some basin spatial data as well (might be useful for the GIS-R part of our sessions)
+
+
+## Roman
+
+[CRU TS v. 3.24.01](https://crudata.uea.ac.uk/cru/data/hrg)
+
+A gridded time-series dataset (01/1901 - 12/2015) in monthly step. It covers all land areas (excluding Antarctica) at 0.5° resolution. It contains variables such as precipitation, temperature, potential evapotranspiration etc. 
+
+## Vojta
+
+[my BPEJ - for members only (request password: **Batman**)](removed)(for link see email) 
+
+This is the estimated pedologic-ecological unit well known as "BPEJ" for entire Czech Rep. Definitely good for the GIS-R lecture, definitely good for hydro-pedological research and also useful for some potentional hydrological model.
+
+## Vocko
+
+[1h 1km rainfall for Czech Republic ](linkremoved)(for link see email)
+
+I could provide some rainfall raster data covering Czech Rep. with 1 km resolution and 1 h accumulations. The original data format is .nc , that could be sometimes tricky for manipulation in R. The link below also contains the same data in ASCII format. As an example I picked data from June 2013 (last extensive flooding).
+
+## Yannis
+
+[3h global precipitation 1979-2015](http://www.gloh2o.org/)
+
+
+http://www.hydrol-earth-syst-sci.net/21/589/2017/hess-21-589-2017.pdf
+
+In ncdf file format at 700mb/month - which can also be easily transformed to animation with Panoply software.
+
+## Eliška
+[EC&D](http://www.ecad.eu/dailydata/index.php)
+
+daily observations at meteorological stations throughout Europe and the Mediterranean (latest data on 31st January)
+
+[Copernicus land](http://land.copernicus.eu/pan-european/corine-land-cover/view)
+
+and something from Copernicus, as Yannis mentioned Sentinel. For exaple they have Corine land cover 2012 in raster or vector.
+
+## Roman Juras
+[Satellite data of air pollution](https://mirador.gsfc.nasa.gov/cgi-bin/mirador/presentNavigation.pl?tree=scienceArea&scienceArea=Atmospheric%20Composition&pp=Trace%20Gases&CGISESSID=9fe18e072d93ce410c6b1cda1a6cae2a)
+
+You can follow the link where satellite data of air pollution are based (Aura Satellites). The data are in various formats, namely NetCDF, HDF5 or ASCII. Best method for downloading is by using wget. I am focused on Sulfur Dioxide and Nitrogen Dioxide. The great challenge is filling the data gaps, which I will try to show you later. 

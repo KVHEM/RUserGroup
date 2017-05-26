@@ -1,0 +1,86 @@
+---
+author: "YannisMarkonis"
+date: "April 4, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Present the exceedence probability in a probability density plot
+
+```{r libraries and functions, results = 'hide'}
+library(readr)
+library(data.table)
+library(ggplot2)
+
+compare.two.hist = function(x1, x2, name1 = "hist1", name2 = "hist2", title = "", xlab= "Score",lim = c(0,0.2),...){
+  smp1 = data.frame(x = x1)
+  smp2 = data.frame(x = x2)
+  smp1$Legend = name1
+  smp2$Legend = name2
+  smpc = rbind(smp1, smp2)
+  
+  ggplot(smpc, aes(x, fill = Legend)) + geom_density(alpha = 0.4) + scale_fill_manual(values=c("orange", "tan4")) + ggtitle(title) +
+    scale_x_continuous(limits=lim)+
+    xlab(xlab)+
+    theme(plot.title = element_text(size=20, face="bold"), axis.title.x = element_text(size=16, face="bold"), axis.title.y = element_text(size=16, face="bold"))
+}
+```
+```{r main, results = 'hide'}
+scores = data.table(read_csv("~/R/scores.csv"))
+nn =length(scores$metric)
+
+scores[, metric.rank := rank(metric)]                      #absolute ranking of the variables [1 is the best]
+scores[, metric.rank.rel := metric.rank/nn]                 #and its relative counterpart
+scores[, metric.log := log(metric)]                        #log transformation due to heavy skewmess
+scores[, metric.norm := metric.log + abs(min(metric.log))] #and some normalization
+scores[, rank.index := cut(metric.rank.rel, breaks = 100, labels = 1:100) ]
+
+scores[, metric.norm := max(metric.norm)- metric.norm]      #reverse values
+```
+
+```{r plot}
+#plot an existing single project score
+rnd.prj = scores$projectid[runif(1, 1, nn)]     #Pick an existing project in random               
+
+ggplot(scores, aes(x=metric.norm)) + 
+  geom_histogram(aes(y=..density..),binwidth=.5, colour="black", fill="lightsteelblue") +  #original data
+  geom_density(alpha=.5, fill="steelblue4", bw = 0.3) +                                    #Kernel density
+  geom_vline(aes(xintercept=scores[projectid == rnd.prj, metric.norm]),                    #score of chosen project 
+               color="steelblue4", linetype="dashed", size=1) +
+  geom_text(x=0.4+scores[projectid == rnd.prj, metric.norm], y=0.45, 
+            col = "steelblue4",
+            label= paste(round(1-scores[projectid == rnd.prj, metric.rank.rel],3)*100, "%", sep = ""))
+
+#plot a new project score
+rnd.metric = 0.01
+short.index = scores[,.(metric, metric.norm, rank.index=as.numeric(as.character(rank.index)))] #Create a 100-value index for quick referencing
+short.index = short.index[!duplicated(rank.index)]
+oo = short.index[rnd.metric<metric, ]
+perc = oo[which.min(oo$rank.index),]
+
+ggplot(scores, aes(x=metric.norm)) + 
+  geom_histogram(aes(y=..density..),binwidth=.5, colour="black", fill="lightsteelblue") +  #original data
+  geom_density(alpha=.5, fill="steelblue4", bw = 0.3) +                                    #Kernel density
+  geom_vline(aes(xintercept=perc$metric.norm),                                             #score of chosen project 
+               color="steelblue4", linetype="dashed", size=1) +
+  geom_text(x=0.4+perc$metric.norm, y=0.45, 
+            col = "steelblue4",
+            label= paste(100-perc$rank.index,"%", sep = ""))
+```
+```{r Compare two desnities}
+compare.two.hist(x1 =sample(scores$metric.norm,50), x2 =sample(scores$metric.norm,200)+0.5, name1 = "Translator1", name2 = "Translator2", lim = c(0,6))
+
+```
+
+
+Used some of the content found [here](http://www.cookbook-r.com/Graphs/Plotting_distributions_%28ggplot2%29/).
+
+***
+
+The next challenging task would be to make a shiny app about it.
+
+
+

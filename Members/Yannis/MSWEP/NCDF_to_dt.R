@@ -38,6 +38,7 @@ saveRDS(mswep.dt.cz, "MSWEP_CZ.Rds")
 
 #Testing the result
 
+mswep.dt.cz = readRDS(paste(nc.path, "/MSWEP_CZ.RDS", sep = "")) 
 mswep.dt.cz[precipitation >40,]
 test = mswep.dt.cz[year(time) == 1998 & month(time) == 7 & (mday(time) == 28 | mday(time) == 27),]
 

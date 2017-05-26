@@ -1,0 +1,75 @@
+---
+title: "logo"
+output: html_document
+---
+
+```{r}
+logo <- function(napis, velikost = 20, barva = 'Blues', dalsi_text = 'Katedra vodního hospodářství a environmentálního modelování') {
+  
+  require(ggplot2)
+  require(RColorBrewer)
+  
+  # napis <- 'KVHEM'
+  pismenka <- unlist(strsplit(napis, split = ''))
+  #pismenka <- LETTERS[c(11, 22, 8, 5, 13)]
+  
+  barvicka <- rev(colorRampPalette(brewer.pal(9, barva))(length(pismenka) + 1))
+  
+  logo <- ggplot(data.frame(0)) + 
+    xlim(c(0, length(pismenka))) + 
+    ylim(c(0,1)) + 
+    theme_classic() + 
+    ggtitle(paste0(napis, ' ', dalsi_text)) +
+    theme(aspect.ratio = 1/length(pismenka), 
+          plot.title = element_text(hjust = 0.5, family = 'URWBookman', colour = barvicka[1]),
+          plot.background = element_rect(fill = barvicka[length(barvicka)]),
+          panel.background = element_rect(fill = barvicka[length(barvicka)]))
+  
+  for(i in 0:(length(pismenka) - 1)) {
+    logo <- logo + 
+      geom_rect(xmin = i, xmax = i + 1,  ymin = 0, ymax = 1, fill = barvicka[i + 1]) +
+      geom_text(x = i + .5, y = .5,  label = pismenka[i + 1], colour = barvicka[length(barvicka)], size = velikost, family = 'URWBookman', fontface = 'bold')
+  }
+  
+  # logo <- logo + annotate('text', x = 2.5, y = .1, label = dalsi_text, colour = barvicka[length(barvicka)], size = length(pismenka) * 1.1)
+  return(logo) 
+}
+
+a <- logo('KVHEM')
+a
+b <- logo('R-Users Group', velikost = 10, dalsi_text = NULL, barva = 'YlOrRd')
+b
+```
+
+```{r}
+logo2 <- function(napis, velikost = 20, barva = 'Blues', dalsi_text = 'Katedra vodního hospodářství a environmentálního modelování') {
+  
+  require(ggplot2)
+  require(RColorBrewer)
+  
+  # napis <- 'KVHEM'
+  pismenka <- unlist(strsplit(napis, split = ''))
+  ix = 0:(length(pismenka) - 1)
+  d = data.frame(xmn = ix, xmx = ix + 1, ymn = 0, ymx = 1, fill = ix, txt = pismenka)
+
+  ggplot(d) + 
+    geom_rect(aes(xmin = xmn, ymin = ymn, xmax = xmx, ymax = ymx, fill = fill)) +
+    geom_text(aes(x = xmn + .5, y = .5, label = txt), col = 'white', size = velikost, fontface = 'bold') +
+    scale_x_continuous(lim = c(0, length(pismenka)), expand = c(0,0)) + 
+    scale_y_continuous(lim = c(0,1), expand = c(0,0)) + xlab(NULL) + ylab(NULL) +
+    theme_classic() + 
+    ggtitle(dalsi_text) + scale_fill_distiller(palette = barva) + 
+    theme(aspect.ratio = 1/length(pismenka), legend.position = 'none',
+          plot.title = element_text(hjust = 0.5, family = 'URWBookman', colour = brewer.pal(9, barva)[9]),
+          plot.background = element_rect(fill = alpha(brewer.pal(9, barva)[2], .8) ),
+          panel.background = element_rect(fill = alpha(brewer.pal(9, barva)[2], .8)))
+    
+  
+}
+
+a <- logo2('KVHEM')
+a
+b <- logo2('RUser Group', velikost = 10, dalsi_text = NULL, barva = 'YlOrRd')
+b
+```
+

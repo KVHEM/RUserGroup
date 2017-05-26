@@ -1,0 +1,40 @@
+---
+author: "YannisMarkonis"
+date: "April 4, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Using GitHub with Rstudio
+
+Some links about Github and Rstudio:
+
+http://r-pkgs.had.co.nz/git.html
+
+https://github.com/KVHEM/RUserGroup.git
+
+http://r-bio.github.io/intro-git-rstudio/
+
+https://www.r-bloggers.com/rstudio-and-github/
+
+
+
+***
+
+It seems that there is some issue when using big files with Github.
+It also seems that there is a way around this by installing:
+
+https://git-lfs.github.com/
+
+as described in [I had the same problem with point 2. mentioned in this post]
+
+https://medium.com/@AyunasCode/how-to-push-large-files-to-github-253d05cc6a09
+
+
+
+
+
+

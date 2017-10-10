@@ -5,13 +5,16 @@ library(reshape2)
 library(trend)
 library(maps)
 library(zoo)
+library(latticeExtra)
+
+local_path = "C:/Users/markonis/Documents/Data/Precipitation/MSWEP/" 
 
 #Raster approach
 #mswep_month_ras = brick(x = 'MSWEP_monthly_050deg.nc')
 #coarse.grid = expand.grid(grid.lat, grid.lon)
 #mswep_month_coarse = t(extract(mswep_month_ras[[1]], SpatialPoints(coarse.grid)))
 
-mswep_lowres = readRDS("MSWEP_5x5_day.Rds")
+mswep_lowres = readRDS(paste0(local_path, "MSWEP_5x5_day.Rds"))
 
 #EDA: Prepare data
 
@@ -166,7 +169,6 @@ slopes[, slopes.year := coef(slope.fast(precip.year, year))[1], by = id]
 slopes[, slopes.year_rel := slopes.year/mean_precip]
 slopes = slopes[!duplicated(slopes$id)]
 
-slopes[[2]] = aa
 names(slopes)[2] = "precip_year"
 
 map("world", fill=TRUE, col="white", bg="lightgrey", ylim=c(-60, 90), mar=c(0,0,0,0))

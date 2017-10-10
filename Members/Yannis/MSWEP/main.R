@@ -6,8 +6,10 @@ library(trend)
 library(maps)
 library(zoo)
 library(latticeExtra)
+library(scalegram)
 
 local_path = "C:/Users/markonis/Documents/Data/Precipitation/MSWEP/" 
+devtools::install_git("https://github.com/imarkonis/scalegram.git", branch = "develop")
 
 #Raster approach
 #mswep_month_ras = brick(x = 'MSWEP_monthly_050deg.nc')
@@ -188,3 +190,27 @@ xyplot(V1~year|lat, zonal_sum_year, groups = lat, type = 'l', scales = list(rela
 
 zonal_heavy_day = mswep_lowres[, sum(precip.24h.75), list(year, lat)]
 xyplot(V1~year|lat, zonal_heavy_day, groups = lat, type = 'l', scales = list(relation = "free"))
+
+#Scalegram
+
+single_point = mswep_lowres[lat == 0.25 & lon == 2.25, .(year, precip)]
+scalegram(single_point, MODE = "s2")
+
+test_dt_scale = single_point[, scalegram(precip), year]
+colnames(test_dt_scale)[1] = "variable" 
+plot_scalegram(test_dt_scale)
+
+single_zone = mswep_lowres[lon == 2.25 & lat <10 & lat> -10, .(lat, precip)]
+test_dt_scale = single_zone[, scalegram(precip, threshold = 100), lat]
+plot_scalegram(test_dt_scale)
+
+
+single_zone = mswep_lowres[lat == 0.25, precip := mean(precip), list(year, lon)]
+single_zone =single_zone[,.(year, precip)]
+colnames(single_zone)[1] = "variable" 
+colnames(single_zone)[2] = "y_scale" 
+plot_scalegram(single_zone, MODE = "s2")
+
+
+
+

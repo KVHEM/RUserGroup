@@ -4,6 +4,7 @@ library(data.table)
 library(raster)
 library(RCurl) 
 library(ncdf4) 
+<<<<<<< HEAD
 
 # Version 2.01
 #################################################################################
@@ -12,6 +13,19 @@ mswep_url_3h = "http://hydrology.princeton.edu/data/hylkeb/MSWEP_V2.01/3hourly_0
 mswep_url_d = "http://hydrology.princeton.edu/data/hylkeb/MSWEP_V2.01/daily_050deg/" #daily at 0.5 deg
 
 file_list = vector() #Create file names
+=======
+library(ncdf.tools) 
+library(RNetCDF) 
+
+# Version 2.0
+#################################################################################
+
+local_path = "C:/Users/markonis/Documents/Data/Precipitation/MSWEP/24h_ver2.0/" 
+mswep_url_3h = "http://hydrology.princeton.edu/data/hylkeb/MSWEP_V2.0/3hourly_010deg/" #3h at 0.1 deg
+mswep_url_d = "http://hydrology.princeton.edu/data/hylkeb/MSWEP_V2.0/daily_050deg/" #daily at 0.5 deg
+
+file_list = vector()
+>>>>>>> ccc0cbd3638197f4b90ae80eb17b71a244a83e78
 for(i in 1979:2016){
   for(j in 1:9){
     file_list[j+(i-1979)*12] = paste0(i, "0", j, ".nc")
@@ -21,6 +35,7 @@ for(i in 1979:2016){
   }
 }
 
+<<<<<<< HEAD
 lowres_lat = seq(-89.75, 89.75, 5)    #Coarse resolution grid coordinates
 lowres_lon = seq(-197.75, 197.75, 5) 
 
@@ -31,6 +46,13 @@ for(i in 1:length(file_list)){        #Downloader to local path
 
 ############ Daily coarse 
 mswep_nc = nc_open(paste0(local_path, file_list[1]))  #Standard raster approach did not work
+=======
+lowres_lat = seq(-89.75, 89.75, 5) 
+lowres_lon = seq(-197.75, 197.75, 5) 
+
+############ Daily coarse
+mswep_nc = nc_open(paste0(local_path, file_list[1]))
+>>>>>>> ccc0cbd3638197f4b90ae80eb17b71a244a83e78
 mswep = ncvar_get(mswep_nc, "precipitation")
 dimnames(mswep)[[3]] = mswep_nc$dim$time$vals
 dimnames(mswep)[[2]] = mswep_nc$dim$lat$vals 
@@ -56,10 +78,17 @@ for(i in 2:length(file_list)){
 
 saveRDS(mswep_lowres, file = "MSWEP_5x5_day.Rds")
 
+<<<<<<< HEAD
 ############ 3h coarse for single file - loop is need here
 coarse.grid = expand.grid(lowres_lon, lowres_lat)
 
 download.file(paste0(mswep_url_3h, file_list[1], sep =""), "imp_month_3h.nc", mode = "wb")  
+=======
+############ 3h coarse
+coarse.grid = expand.grid(lowres_lon, lowres_lat)
+
+download.file(paste(mswep.url, ftp.files[1], sep =""), "imp_month_3h.nc", mode = "wb")  # binary file types are transferred with mode = "wb".
+>>>>>>> ccc0cbd3638197f4b90ae80eb17b71a244a83e78
 mswep.ras.coarse = brick(x = 'imp_month_3h.nc', path = '"C:/Users/markonis/Documents/R/Projects/MSWEP"')
 
 bb = t(extract(mswep.ras.coarse, SpatialPoints(coarse.grid)))
@@ -77,7 +106,11 @@ bb.t[, Var2 := as.character(Var2)]
 bb.t[, lon := as.numeric(sapply(strsplit(Var2,split=" ") , "[[", 1))]
 bb.t[, lat := as.numeric(sapply(strsplit(Var2,split=" ") , "[[", 2))]
 
+<<<<<<< HEAD
 saveRDS(bb.t, file = "MSWEP_5x5_3h.Rds")
+=======
+
+>>>>>>> ccc0cbd3638197f4b90ae80eb17b71a244a83e78
 
 # Version 1.2
 #################################################################################

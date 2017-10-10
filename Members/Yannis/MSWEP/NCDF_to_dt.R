@@ -45,5 +45,28 @@ test = mswep.dt.cz[year(time) == 1998 & month(time) == 7 & (mday(time) == 28 | m
 test.brk = transform.dt.to.brick(test, variable.name = "precipitation")
 plot(test.brk)
 
+#Matrix to dt
+mswep.dt = readRDS("MSWEP_5x5_int.Rds")
+rownames(mswep.dt) = as.character(seq(c(ISOdate(1978,12,31,23)), by = "3 hour", length.out = dim(mswep.dt)[1]))
+mswep.dt = data.table(melt(mswep.dt))
+mswep.dt.nz =  mswep.dt[value != 0]
+mswep.dt.nz[,year := year(Var1)]
+coords = data.table(mswep.dt.nz[, stringr::str_split_fixed(as.character(Var2), " ", 2)])
+colnames(coords) = c("lat", "lon")
+mswep.dt.nz = cbind(mswep.dt.nz, coords )
+mswep.dt.nz[, Var2 := NULL]
+colnames(mswep.dt.nz)[1:2] = c("time", "prcp")
+setcolorder(mswep.dt.nz, c("year", "lat", "lon", "time", "prcp"))
+saveRDS(mswep.dt, "MSWEP_dt_nz_full.Rds")
+
+mswep.dt[,year := year(Var1)]
+coords = data.table(mswep.dt[, stringr::str_split_fixed(as.character(Var2), " ", 2)])
+colnames(coords) = c("lat", "lon")
+mswep.dt = cbind(mswep.dt, coords )
+mswep.dt[, Var2 := NULL]
+colnames(mswep.dt)[1:2] = c("time", "prcp")
+setcolorder(mswep.dt, c("year", "lat", "lon", "time", "prcp"))
+saveRDS(mswep.dt, "MSWEP_dt_nz_full.Rds")
+
 
 

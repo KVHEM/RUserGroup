@@ -13,7 +13,7 @@ d.	Drought typology.
 
 ###Skillset development
 
-_dbplyr_: Use databases with dplyr. 
+_dbplyr_: Use databases with dplyr
 
 _parallel_, _foreach_: multi-core programming 
 

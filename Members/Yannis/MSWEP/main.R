@@ -32,7 +32,7 @@ mswep_lowres[, year := year(time)]
 mswep_lowres[, month := month(time)]
 mswep_lowres[, day := yday(time)]
 
-saveRDS(mswep_lowres, file = paste0(local_path, "MSWEP_5x5_day_basic.Rds"))
+#saveRDS(mswep_lowres, file = paste0(local_path, "MSWEP_5x5_day_basic.Rds"))
 
 mswep_lowres[, pr_mon := sum(precip), by = list(id, month, year)]
 mswep_lowres[, pr_mon_75 := quantile(precip, 0.75), by = list(id, month, year)]
@@ -68,7 +68,8 @@ mswep_lowres[, pr_areal := precip * 0.001 * area] # m^3 x 10^6
 mswep_lowres[, pr_areal_year := sum(pr_areal),  list(id, year) ] 
 mswep_lowres[, pr_intens_year := pr_areal_year/(365-dry_days), by = list(id, year)]
 
-saveRDS(mswep_lowres, file = paste0(local_path, "MSWEP_5x5_day_analysis.Rds"))
+#saveRDS(mswep_lowres, file = paste0(local_path, "MSWEP_5x5_day_analysis.Rds"))
+mswep_lowres = readRDS(file = paste0(local_path, "MSWEP_5x5_day_analysis.Rds"))
 
 
 ###############
@@ -270,5 +271,5 @@ colnames(single_zone)[2] = "y_scale"
 plot_scalegram(single_zone, MODE = "s2")
 
 
-
+rm(mswep_lowres)
 

@@ -4,9 +4,12 @@ library(ncdf4)
 library(reshape2)
 library(trend)
 library(maps)
+library(maptools)
 library(zoo)
 library(latticeExtra)
 library(scalegram)
+library(geosphere)
+data(wrld_simpl)
 
 local_path = "C:/Users/markonis/Documents/Data/Precipitation/MSWEP/" 
 devtools::install_git("https://github.com/imarkonis/scalegram.git", branch = "develop")
@@ -28,13 +31,49 @@ mswep_lowres = mswep_lowres[counts > 30]
 mswep_lowres[, year := year(time)]
 mswep_lowres[, month := month(time)]
 mswep_lowres[, day := yday(time)]
-mswep_lowres[, precip.mon := sum(precip), by = list(id, month, year)]
-mswep_lowres[, precip.mon.75 := quantile(precip, 0.75), by = list(id, month, year)]
-mswep_lowres[, precip.year := sum(precip), by = list(id, year)]
-mswep_lowres[, precip.24h.max := max(precip), by = list(year, id)]
-mswep_lowres[, precip.24h.75 := quantile(precip, 0.75), by = list(year, id)]
 
+saveRDS(mswep_lowres, file = paste0(local_path, "MSWEP_5x5_day_basic.Rds"))
+
+mswep_lowres[, pr_mon := sum(precip), by = list(id, month, year)]
+mswep_lowres[, pr_mon_75 := quantile(precip, 0.75), by = list(id, month, year)]
+mswep_lowres[, pr_year := sum(precip), by = list(id, year)]
+mswep_lowres[, pr_24h_max := max(precip), by = list(year, id)]
+mswep_lowres[, pr_24h_75 := quantile(precip, 0.75), by = list(year, id)]
+mswep_lowres[precip == 0, dry_days := .N, by = list(id, year)]
+
+
+## 
+lon = mswep_lowres[, unique(lon)]
+lat = mswep_lowres[, unique(lat)]
+mswep_points <- expand.grid(lon, lat)
+pts <- SpatialPoints(points, proj4string=CRS(proj4string(wrld_simpl)))
+land <- !is.na(over(pts, wrld_simpl)$FIPS)
+mswep_points = data.table(cbind(mswep_points, land))
+colnames(mswep_points)[1:2] = c("lon", "lat")
+mswep_points$id = mswep_lowres[, unique(id)]
+setcolorder(mswep_points, c("id", "lat", "lon", "land"))
+
+plot(wrld_simpl)
+points(pts, col=1+land, pch=16)
+
+for(i in 1:nrow(mswep_points)){ #estimate area of each 0.5 grid cell
+  temp = with(mswep_points[i,], expand.grid(c(lon, lon + 0.5 ), c(lat, lat + 0.5)))
+  temp = temp[c(4, 2, 1,3),]
+  mswep_points$area[i] = areaPolygon(temp)/1000000 # area in km^2
+}
+
+mswep_lowres = merge(mswep_lowres, mswep_points)
+mswep_lowres = mswep_lowres[order(mswep_lowres$id),]
+mswep_lowres[, pr_areal := precip * 0.001 * area] # m^3 x 10^6
+mswep_lowres[, pr_areal_year := sum(pr_areal),  list(id, year) ] 
+mswep_lowres[, pr_intens_year := pr_areal_year/(365-dry_days), by = list(id, year)]
+
+saveRDS(mswep_lowres, file = paste0(local_path, "MSWEP_5x5_day_analysis.Rds"))
+
+
+###############
 #Petit tests
+###############
 
 #Annual
 
@@ -155,7 +194,9 @@ map("world", fill=TRUE, col="white", bg="lightgrey", ylim=c(-60, 90), mar=c(0,0,
 points(lat~lon, valid.points.25,  col="dark green", pch=16)
 points(lat~lon, valid.points.25[br.pt <= 22 & br.pt >= 19 & br.pt.p<0.05],  col="red", pch=16)
 
+##############
 #Slopes
+##############
 
 slope.fast = function(y, x = 1:length(y)){ 
   x = cbind(x,y)
@@ -182,14 +223,32 @@ points(lat~lon, slopes[slopes.year_rel < -0.0025],  col="orange", pch=16)
 points(lat~lon, slopes[slopes.year_rel < -0.005],  col="red", pch=16)
 points(lat~lon, slopes[slopes.year_rel < -0.01],  col="dark red", pch=16)
 
+####################
 #Zonal Means
+####################
 
-zonal_sum_day = mswep_lowres[, sum(precip), list(time.abs, lat)]
-zonal_sum_year = mswep_lowres[, sum(precip), list(year, lat)]
-xyplot(V1~year|lat, zonal_sum_year, groups = lat, type = 'l', scales = list(relation = "free"))
+zonal_sum_year = mswep_lowres[, sum(pr_areal), list(year, lat)]
+colnames(zonal_sum_year)[3] = "precip"
+xyplot(precip~year|lat, zonal_sum_year, type = c('l', 'r'), scales = list(relation = "free"))
+xyplot(precip~year, zonal_sum_year, type = c('l', 'r'), groups = lat, scales = list(relation = "free"))
 
-zonal_heavy_day = mswep_lowres[, sum(precip.24h.75), list(year, lat)]
-xyplot(V1~year|lat, zonal_heavy_day, groups = lat, type = 'l', scales = list(relation = "free"))
+zonal_dry_year = mswep_lowres[, mean(dry_days, na.rm = T), list(year, lat)]
+colnames(zonal_dry_year )[3] = "dry_days"
+xyplot(dry_days~year|lat, zonal_dry_year, type = c('l', 'r'), scales = list(relation = "free"))
+
+zonal_intens_year = mswep_lowres[, mean(pr_intens_year, na.rm = T), list(year, lat)]
+colnames(zonal_intens_year )[3] = "intensity"
+xyplot(intensity~year|lat, zonal_intens_year, type = c('l', 'r'), scales = list(relation = "free"))
+
+#Land vs Ocean
+
+zonal_sum_year_land = mswep_lowres[land == T, sum(pr_areal), list(year, lat)]
+zonal_sum_year_ocean = mswep_lowres[land == F, sum(pr_areal), list(year, lat)]
+xyplot(V1~year|lat, zonal_sum_year_land, type = c('l', 'r'), scales = list(relation = "free"))
+xyplot(V1~year|lat, zonal_sum_year_ocean, type = c('l', 'r'), scales = list(relation = "free"))
+
+zonal_dry_year_land = mswep_lowres[land == T & precip == 0, mean(.N), list(year, lat)]
+
 
 #Scalegram
 
@@ -203,7 +262,6 @@ plot_scalegram(test_dt_scale)
 single_zone = mswep_lowres[lon == 2.25 & lat <10 & lat> -10, .(lat, precip)]
 test_dt_scale = single_zone[, scalegram(precip, threshold = 100), lat]
 plot_scalegram(test_dt_scale)
-
 
 single_zone = mswep_lowres[lat == 0.25, precip := mean(precip), list(year, lon)]
 single_zone =single_zone[,.(year, precip)]

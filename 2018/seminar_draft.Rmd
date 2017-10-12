@@ -18,6 +18,11 @@ _dbplyr_: Use databases with dplyr.
 
 _parallel_, _foreach_: multi-core programming 
 
+###Dataset used and EDA:
+
+https://shiny.fzp.czu.cz/KVHEM/drought/
+
+
 ###Related literature
 
 Revisiting the recent European droughts from a long-term perspective [[Hanel et al., submitted]](https://owncloud.cesnet.cz/index.php/s/wpFXfeHkZm3smYH)

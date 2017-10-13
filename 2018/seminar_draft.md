@@ -10,9 +10,9 @@ Determine the effect of different parameterization and aggregation scales to the
 
 ### Skillset development
 
-*dbplyr*: Use databases with dplyr
+`dbplyr`: Use databases with dplyr
 
-*parallel*, *foreach*: multi-core programming
+`parallel`, *foreach*: multi-core programming
 
 ### Dataset used and EDA:
 

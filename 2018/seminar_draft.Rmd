@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-###Main objective
+### Main objective
 
 Determine the effect of different parameterization and aggregation scales to the simulation results:
 
@@ -11,18 +11,24 @@ b.	Discrimination between the aggregation and parameterization effect.
 c.	Explicit drought events.
 d.	Drought typology.
 
-###Skillset development
+### Skillset development
+
+_DBI_: database connection and operation in R
+
+_netcdf_: extraction and manipulation of netcdf files in R and possibly with CDO
 
 _dbplyr_: Use databases with dplyr
 
-_parallel_, _foreach_: multi-core programming 
+_parallel_, _foreach_: multi-core/parallel programming 
 
-###Dataset used and EDA:
+_shiny_: interactive data visualization
 
-https://shiny.fzp.czu.cz/KVHEM/drought/
+### Dataset used and EDA:
+
+https://shiny.fzp.czu.cz/KVHEM/drought/ (to be uploaded soon)
 
 
-###Related literature
+### Related literature
 
 Revisiting the recent European droughts from a long-term perspective [[Hanel et al., submitted]](https://owncloud.cesnet.cz/index.php/s/wpFXfeHkZm3smYH)
 

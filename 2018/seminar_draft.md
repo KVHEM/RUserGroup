@@ -10,13 +10,19 @@ Determine the effect of different parameterization and aggregation scales to the
 
 ### Skillset development
 
+*DBI*: database connection and operation in R
+
+*netcdf*: extraction and manipulation of netcdf files in R and possibly with CDO
+
 *dbplyr*: Use databases with dplyr
 
-*parallel*, *foreach*: multi-core programming
+*parallel*, *foreach*: multi-core/parallel programming
+
+*shiny*: interactive data visualization
 
 ### Dataset used and EDA:
 
-<https://shiny.fzp.czu.cz/KVHEM/drought/>
+<https://shiny.fzp.czu.cz/KVHEM/drought/> (to be uploaded soon)
 
 ### Related literature
 

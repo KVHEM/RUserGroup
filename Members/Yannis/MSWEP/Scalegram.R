@@ -1,3 +1,5 @@
+devtools::install_git("https://github.com/imarkonis/scalegram.git", branch = "develop")
+
 single_point = mswep_lowres[lat == 0.25 & lon == 2.25, .(year, precip)]
 scalegram(single_point, MODE = "s2")
 

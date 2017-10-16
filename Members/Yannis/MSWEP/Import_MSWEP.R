@@ -24,13 +24,17 @@ for(i in 1979:2016){
 lowres_lat = seq(-89.75, 89.75, 5)    #Coarse resolution grid coordinates
 lowres_lon = seq(-197.75, 197.75, 5) 
 
+eu_lat = seq(30.25, 70.25, 0.5)    #European grid coordinates
+eu_lon = seq(-10.25, 40.25, 0.5) 
+
+
 for(i in 1:length(file_list)){        #Downloader to local path
   fname = paste0(mswep_url_d, file_list[i])
   download.file(fname, paste0(local_path, file_list[i]), mode = "wb", quiet = T)  # binary file types are transferred with mode = "wb".
 }  
 
 ############ Daily coarse 
-mswep_nc = nc_open(paste0(local_path, file_list[1]))  #Standard raster approach did not work
+mswep_nc = nc_open(paste0(local_path, "24h_ver2.0/", file_list[1]))  #Standard raster approach did not work
 mswep = ncvar_get(mswep_nc, "precipitation")
 dimnames(mswep)[[3]] = mswep_nc$dim$time$vals
 dimnames(mswep)[[2]] = mswep_nc$dim$lat$vals 
@@ -41,7 +45,7 @@ mswep_lowres = mswep_lowres[lat %in% lowres_lat & lon %in% lowres_lon]
 rm(kk, mswep, mswep_nc); gc()
 
 for(i in 2:length(file_list)){
-  mswep_nc = nc_open(paste0(local_path, file_list[i]))
+  mswep_nc = nc_open(paste0(local_path, "24h_ver2.0/", file_list[i]))
   mswep = ncvar_get(mswep_nc, "precipitation")
   dimnames(mswep)[[3]] = mswep_nc$dim$time$vals
   dimnames(mswep)[[2]] = mswep_nc$dim$lat$vals 
@@ -55,6 +59,33 @@ for(i in 2:length(file_list)){
 }
 
 saveRDS(mswep_lowres, file = "MSWEP_5x5_day.Rds")
+
+###Europe
+mswep_nc = nc_open(paste0(local_path, "24h_ver2.0/", file_list[1]))  
+mswep = ncvar_get(mswep_nc, "precipitation")
+dimnames(mswep)[[3]] = mswep_nc$dim$time$vals
+dimnames(mswep)[[2]] = mswep_nc$dim$lat$vals 
+dimnames(mswep)[[1]] = mswep_nc$dim$lon$vals
+kk = nc_close(mswep_nc)
+mswep_eu = data.table(melt(mswep, varnames=c("lon","lat","time"), value.name="precip"))
+mswep_eu = mswep_eu[lat %in% eu_lat & lon %in% eu_lon]
+rm(kk, mswep, mswep_nc); gc()
+
+for(i in 2:length(file_list)){
+  mswep_nc = nc_open(paste0(local_path, "24h_ver2.0/", file_list[i]))
+  mswep = ncvar_get(mswep_nc, "precipitation")
+  dimnames(mswep)[[3]] = mswep_nc$dim$time$vals
+  dimnames(mswep)[[2]] = mswep_nc$dim$lat$vals 
+  dimnames(mswep)[[1]] = mswep_nc$dim$lon$vals
+  kk = nc_close(mswep_nc)
+  mswep_eu_temp = data.table(melt(mswep, varnames=c("lon","lat","time"), value.name="precip"))
+  mswep_eu_temp = mswep_eu_temp[lat %in% eu_lat & lon %in% eu_lon]
+  mswep_eu = rbind(mswep_eu, mswep_eu_temp)
+  rm(kk, mswep, mswep_nc); gc()
+  print(i)
+}
+
+saveRDS(mswep_eu, file = "MSWEP_eu_day.Rds")
 
 ############ 3h coarse for single file - loop is need here
 coarse.grid = expand.grid(lowres_lon, lowres_lat)

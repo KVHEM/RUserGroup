@@ -1,3 +1,7 @@
+library(trend)
+
+mswep_lowres = readRDS(file = paste0(local_path, "MSWEP_5x5_day_analysis.Rds"))
+
 ###############
 #Petit tests
 ###############

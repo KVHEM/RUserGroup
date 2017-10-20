@@ -18,7 +18,7 @@ mswep_change[, slopes_hvy_pr_year := coef(slope_fast(hvy_pr_per_year , year))[1]
 mswep_change[, slopes_intens_pr_year := coef(slope_fast(pr_intens_year, year))[1], by = id] 
 
 mswep_change_points = mswep_change[!duplicated(mswep_change$id)]
-mswep_change_points = merge(mswep_change_points, mswep_points, by = "id")
+mswep_change_points = merge(mswep_change_points, mswep_points)
 
 mswep_change_global_plot = rbind(cbind(mswep_change_global, "global"), 
                             cbind(mswep_change_ocean, "ocean"),
@@ -125,9 +125,14 @@ ggplot(data = itcz_change, aes(x = lat, y = V1, group = lon, col = lon)) +
 #Changes in the distribution
 ####################
 
+#Sensitivity analysis of this method to random slopes
+#aa = rgamma(shape = 0.5, rate = 2, 7500)*30
+#aa = data.table(cbind(id = 1, precip = aa, year = as.integer(runif(7500, 1, 17))))
+#qq_slopes(aa)
+
 #Global
 global = mswep_lowres[precip != 0, .(id, year, day, precip)]
-global_distr_change = plot_distr_change(ceu)
+global = merge(global, mswep_change_points[, .(id, lat, lon)], by = "id")
 
 global_land = mswep_lowres[precip != 0 & land ==T, .(id, year, day, precip)]
 global_land_distr_change = plot_distr_change(global_land)
@@ -139,6 +144,18 @@ ggplot() +
   geom_density(data = region_qq_slopes, aes(x = slope, group = quantile, col = quantile)) +
   scale_colour_grey(start = 0.9, end = 0) +
   theme_bw()
+
+#Single point
+single_site = mswep_lowres[precip != 0 & lat == 15.25 & lon == 32.25, .(id, year, day, precip)]
+plot_distr_change_single(single_site, kendal_thres = 0.1)
+
+single_site = mswep_lowres[precip != 0 & lat == 50.25 & lon == 72.25, .(id, year, day, precip)]
+plot_distr_change_single(single_site, kendal_thres = 0.01)
+
+single_site = mswep_lowres[precip != 0 & lat == 45.25 & lon == 12.25, .(id, year, day, precip)]
+g = plot_distr_change_single(single_site, kendal_thres = 0.12) 
+g + geom_hline(aes(yintercept = 0), col = "grey40", linetype = 9, size = 1.2)
+
 
 #ITCZ
 itcz = mswep_lowres[lat > -4 & lat < 26 & precip != 0, .(id, year, day, precip)]
@@ -166,6 +183,57 @@ ggplot() +
 ####################
 #Zonal Means
 ####################
+
+lat_zones = c(-60, -30, 0, 15, 45, 75)
+lon_zones = c(-75, 40, 115, -75)
+
+region = mswep_lowres[precip != 0 & lon > lon_zones[1] & lon < lon_zones[2] & land == F, 
+                      .(id, year, day, precip, lat, lon)]
+
+region_distr_change_lat = plot_zonal_distr_change(region)
+
+region = mswep_lowres[precip != 0 & lat > lat_zones[1] & lat < lat_zones[6] & 
+                        lon > lon_zones[1] & lon < lon_zones[2] & land == F, 
+                      .(id, year, day, precip, lat, lon)]
+
+region_distr_change_lon = plot_zonal_distr_change(region, direction = "lon")
+
+lat_atlantic = mswep_lowres[precip != 0 & lon > lon_zones[1] & lon < lon_zones[2] & land == F, 
+                      .(id, year, day, precip, lat, lon)]
+lat_indian = mswep_lowres[precip != 0 & lon > lon_zones[2] & lon < lon_zones[3] & land == F, 
+                      .(id, year, day, precip, lat, lon)]
+lat_pacific = mswep_lowres[precip != 0 & land == F & (lon > lon_zones[3] | lon < lon_zones[4]), 
+                      .(id, year, day, precip, lat, lon)]
+lat_eu_afr = mswep_lowres[precip != 0 & lon > lon_zones[1] & lon < lon_zones[2] & land == T, 
+                      .(id, year, day, precip, lat, lon)]
+lat_asia = mswep_lowres[precip != 0 & lon > lon_zones[2] & lon < lon_zones[3] & land == T, 
+                      .(id, year, day, precip, lat, lon)]
+lat_am_aus = mswep_lowres[precip != 0 & land == T & (lon > lon_zones[3] | lon < lon_zones[4]), 
+                                       .(id, year, day, precip, lat, lon)]
+
+distr_change_lat_atlantic = plot_zonal_distr_change(lat_atlantic, interpolate = F)
+distr_change_lat_indian = plot_zonal_distr_change(lat_indian, interpolate = F)
+distr_change_lat_pacific = plot_zonal_distr_change(lat_pacific, interpolate = F)
+distr_change_lat_eu_afr = plot_zonal_distr_change(lat_eu_afr, interpolate = F)
+distr_change_lat_asia = plot_zonal_distr_change(lat_asia, interpolate = F)
+distr_change_lat_am_aus = plot_zonal_distr_change(lat_am_aus, interpolate = F)
+
+lon_mid_S = mswep_lowres[precip != 0 & lat > lat_zones[1] & lat < lat_zones[2], 
+                           .(id, year, day, precip, lat, lon)]
+lon_subtropic_S = mswep_lowres[precip != 0 & lat > lat_zones[2] & lat < lat_zones[3], 
+                           .(id, year, day, precip, lat, lon)]
+lon_tropics = mswep_lowres[precip != 0 & lat > lat_zones[3] & lat < lat_zones[4], 
+                           .(id, year, day, precip, lat, lon)]
+lon_subtropic_N = mswep_lowres[precip != 0 & lat > lat_zones[4] & lat < lat_zones[5], 
+                           .(id, year, day, precip, lat, lon)]
+lon_mid_N = mswep_lowres[precip != 0 & lat > lat_zones[5] & lat < lat_zones[6], 
+                           .(id, year, day, precip, lat, lon)]
+
+distr_change_lon_mid_S = plot_zonal_distr_change(lon_mid_S, direction = "lon", interpolate = F)
+distr_change_lon_subtropic_S = plot_zonal_distr_change(lon_subtropic_S, direction = "lon", interpolate = F)
+distr_change_lon_tropics = plot_zonal_distr_change(lon_tropics, direction = "lon", interpolate = T)
+distr_change_lon_subtropic_N = plot_zonal_distr_change(lon_subtropic_N, direction = "lon", interpolate = F)
+distr_change_lon_mid_N = plot_zonal_distr_change(lon_mid_N, direction = "lon", interpolate = F)
 
 precip_tropic_year = unique(mswep_lowres[lat == 40.25, .(pr_areal_year, lon, year)])
 #xyplot(pr_areal_year~lon, precip_tropic_year, groups = year, type = 'l')

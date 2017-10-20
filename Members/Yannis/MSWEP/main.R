@@ -9,6 +9,36 @@ library(geosphere)
 
 local_path = "C:/Users/markonis/Documents/Data/Precipitation/MSWEP/" 
 
+#Functions
+
+qq_slopes =  function(region){
+  region_qq = region[, as.list(quantile(precip, probs = seq(0.1, 0.9, 0.05))), list(id, year)]
+  region_qq_slopes = region_qq[, lapply(.SD, function(x) slope_fast_coef(x)/mean(x)), by = id, .SDcols = 3:19]
+  region_qq_kendal = region_qq[, lapply(.SD,  function(x) Kendall::MannKendall(x)[2]), by = id, .SDcols = 3:19]
+  region_qq_kendal = melt(region_qq_kendal, id.vars = "id")
+  region_qq_slopes = melt(region_qq_slopes, id.vars = "id")
+  region_qq_slopes[,kendal := region_qq_kendal$value]
+  colnames(region_qq_slopes)[2:3] = c("quantile", "slope")
+  return(region_qq_slopes)
+}
+
+slope_fast = function(y, x = 1:length(y)){
+  sl = NA
+  x = cbind(x,y)
+  x = x[!is.na(x[,2]),]
+  sl = try(lm.fit(x=cbind(x[,1],1), y=x[,2]), silent = TRUE)
+  return(sl)
+}
+
+slope_fast_coef = function(y, x = 1:length(y)){
+  sl = NA
+  x = cbind(x,y)
+  x = x[!is.na(x[,2]),]
+  sl = try(lm.fit(x=cbind(x[,1],1), y=x[,2]), silent = TRUE)
+  return(coef(sl)[1])
+}
+
+
 #Raster approach
 #library(raster)
 #mswep_month_ras = brick(x = 'MSWEP_monthly_050deg.nc')

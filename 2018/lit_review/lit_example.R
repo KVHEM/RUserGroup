@@ -21,7 +21,7 @@ indices$H
 A <- cocMatrix(M, Field = "SO", sep = ";")
 sort(Matrix::colSums(A), decreasing = TRUE)[1:5]
 
-#Bibliographic coupling analyses the cited documents:
+#Bibliographic coupling analyses the citing documents:
 #Current research front and connection between groups
 NetMatrix <- biblioNetwork(M, analysis = "coupling", network = "authors", sep = ";")
 S <- normalizeSimilarity(NetMatrix, type="jaccard")
@@ -42,13 +42,6 @@ net <- networkPlot(S, n = 130, Title = "Authors' Collaboration",
                    size=FALSE,remove.multiple=TRUE)
 
 #Keyword co-occurence
-NetMatrix <- biblioNetwork(M, analysis = "co-occurrences", network = "keywords", sep = ";")
-net=networkPlot(NetMatrix, n = 40, Title = "Keyword Co-occurrences", 
-                type = "kamada", size=T, curved = T)
-
-CS <- conceptualStructure(M, field="ID_TM", 
-                          minDegree=8, k.max=9, stemming = FALSE, labelsize = 10)
-
 histResults <- histNetwork(M, n = 120, sep = ".  ")
 net <- histPlot(histResults, size = FALSE)
 
@@ -57,8 +50,8 @@ abstracts <- M$AB
 abstracts <- gsub("   ", " ", abstracts)
 names(abstracts) <- paste(gsub("([A-Za-z]+).*", "\\1", M$AU), M$PY, "|", M$JI,"|", M$TC)
 
-toMatch <- c("WATER CYCLE", "HYDROLOGIC CYCLE", "HYDROLOGICAL CYCLE")
-matched_sentences = tolower(unlist(strsplit(abstracts, split="\\."))[grep(paste(toMatch, collapse="|"),unlist(strsplit(abstracts,split="\\.")))])
+toMatch <- c("UNCERTAINTY")
+matched_sentences = tolower(unlist(strsplit(abstracts, split = "\\."))[grep(paste(toMatch, collapse="|"), unlist(strsplit(abstracts, split = "\\.")))])
 matched_sentences = paste0(matched_sentences, " [", substr(names(matched_sentences), 1, nchar(names(matched_sentences))-1), "]") 
 
-write(matched_sentences, file = "hydro2010_abs.txt")
+write(matched_sentences, file = "sample_abs.txt")

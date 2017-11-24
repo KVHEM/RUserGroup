@@ -1,5 +1,5 @@
 #devtools::install_github("massimoaria/bibliometrix")
-library(bibliometrix)
+library(bibliometrix) #See http://www.bibliometrix.org/
 
 D <- readFiles("./2018/lit_review/savedrecs.bib")
 M <- convert2df(D, dbsource = "isi", format = "bibtex")
@@ -42,7 +42,7 @@ net <- networkPlot(S, n = 130, Title = "Authors' Collaboration",
                    size=FALSE,remove.multiple=TRUE)
 
 #Keyword co-occurence
-histResults <- histNetwork(M, n = 120, sep = ".  ")
+histResults <- histNetwork(M, n = 30, sep = ".  ")
 net <- histPlot(histResults, size = FALSE)
 
 #Find specific keywords in abstract
@@ -51,7 +51,7 @@ abstracts <- gsub("   ", " ", abstracts)
 names(abstracts) <- paste(gsub("([A-Za-z]+).*", "\\1", M$AU), M$PY, "|", M$JI,"|", M$TC)
 
 toMatch <- c("UNCERTAINTY")
-matched_sentences = tolower(unlist(strsplit(abstracts, split = "\\."))[grep(paste(toMatch, collapse="|"), unlist(strsplit(abstracts, split = "\\.")))])
-matched_sentences = paste0(matched_sentences, " [", substr(names(matched_sentences), 1, nchar(names(matched_sentences))-1), "]") 
+matched_sentences <- tolower(unlist(strsplit(abstracts, split = "\\."))[grep(paste(toMatch, collapse="|"), unlist(strsplit(abstracts, split = "\\.")))])
+matched_sentences <- paste0(matched_sentences, " [", substr(names(matched_sentences), 1, nchar(names(matched_sentences))-1), "]") 
 
 write(matched_sentences, file = "sample_abs.txt")
